@@ -1,0 +1,91 @@
+name: Build and validate desktop releases
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: New release tag
+        required: true
+        default: v0.2.0
+permissions:
+  contents: read
+jobs:
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-15
+          - arch: x64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - name: Shell syntax and cross-platform launcher tests
+        run: |
+          bash -n start-macos.sh Start-Memory-Atlas.command scripts/macos-runtimes.sh
+          python3 tests/test_macos.py
+          python3 tests/test_local_library.py
+      - name: Build native portable package
+        run: python3 scripts/build-macos.py --arch ${{ matrix.arch }}
+      - name: Validate native runtime and relocated package
+        run: python3 tests/test_macos_portable.py --arch ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: macos-${{ matrix.arch }}
+          path: dist/*
+          if-no-files-found: error
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build Windows and source packages
+        run: python scripts/prepare-release.py
+      - name: Validate packages
+        run: |
+          python tests/test_distribution.py
+          python tests/test_macos.py
+          python tests/test_local_library.py
+          python tests/test_portable_smoke.py
+          python tests/test_portable_smoke.py --source
+      - uses: actions/upload-artifact@v7
+        with:
+          name: windows-and-source
+          path: dist/*
+          if-no-files-found: error
+  publish:
+    needs: [macos, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Publish only after every native build passes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+          HEAD: ${{ github.sha }}
+        run: |
+          cat > notes.md <<'EOF'
+          拾光地图桌面版，新增 Apple 芯片和 Intel Mac 支持。
+
+          - Mac M 系列芯片：下载 memory-atlas-macos-arm64.zip。
+          - Intel Mac：下载 memory-atlas-macos-x64.zip。
+          - Windows 电脑：下载 memory-atlas-windows-x64.zip。
+          - 修改代码：使用源码包或 git clone。
+
+          Mac 完整解压后双击 Start-Memory-Atlas.command；Windows 双击 start.bat。完整包自带对应架构 Python 和本地模型，无需安装开发工具。每个人的回忆保存在自己的回忆库中。
+
+          两种 Mac 架构均经过 GitHub macOS 15 原生运行器的自动化验证，验证报告作为附件提供。摄像头授权、真人手势体验、Finder 下载隔离/Gatekeeper 提示仍需要在用户自己的 Mac 上确认。包未经 Apple Developer ID 签名或公证，不包含自动关闭安全保护的脚本。首次打开如遇系统提示，请核对来源并按 Apple 官方指引处理。
+
+          校验值见同名 .sha256 文件。更新前先备份回忆库，更新方法与第三方资源说明见 README。
+          EOF
+          gh release create "$TAG" --repo "$GH_REPO" --target "$HEAD" --title "拾光地图 $TAG · Windows 与 Mac" --notes-file notes.md --draft
+          gh release upload "$TAG" dist/* --repo "$GH_REPO"
+          gh release edit "$TAG" --repo "$GH_REPO" --draft=false --latest
