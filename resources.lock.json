@@ -30,6 +30,18 @@
       "sha256": "8707eef0533987efc5b155d64761eeb6e20793f50b9bd1a68dad1cf4719d0ed8",
       "archive": "mediapipe-license.txt",
       "bytes": 12331
+    },
+    "python_macos_arm64": {
+      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.13.18%2B20261026-aarch64-apple-darwin-install_only.tar.gz",
+      "sha256": "e5af2fde6a937a0e0c795a0c595c4efb70578d57463a2657c819992b9b9acbac",
+      "archive": "python-macos-arm64.tar.gz",
+      "bytes": 25394044
+    },
+    "python_macos_x64": {
+      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.13.18%2B20261026-x86_64-apple-darwin-install_only.tar.gz",
+      "sha256": "708be9e7df297f68bdae589ea9e62a621db5abe7708f79e851c41410347452d1",
+      "archive": "python-macos-x64.tar.gz",
+      "bytes": 25155145
     }
   }
 }

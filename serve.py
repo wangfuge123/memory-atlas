@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import mimetypes
+import os
 from urllib.parse import urlsplit
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -36,7 +37,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/__sphere_health':
             body = json.dumps({'project': PROJECT_ID, 'ready': True, 'storage': 'filesystem', 'apiVersion': 1,
-                               'libraryPath': str(self.server.library.root)}).encode()
+                               'libraryPath': str(self.server.library.root), 'pid': os.getpid()}).encode()
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', str(len(body)))

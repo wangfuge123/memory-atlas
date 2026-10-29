@@ -1,5 +1,7 @@
 * text=auto eol=lf
 *.bat text eol=crlf
+*.sh text eol=lf
+*.command text eol=lf
 # Preserve downloaded dependency bytes for the recorded checksums.
 vendor/** -text
 sample-photos/** -text

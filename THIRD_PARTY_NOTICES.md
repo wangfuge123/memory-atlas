@@ -33,3 +33,11 @@
 - 地图数据未因项目的 MIT 许可证而获得重新授权。现有文件未附明确的再分发许可证，正式公开分发前需由维护者确认数据源的适用条款及地图发布要求。
 
 所有下载项的固定地址和 SHA-256 见 `resources.lock.json`，本地浏览器资源逐文件校验值见 `vendor/checksums.json`。
+
+## Mac 便携 CPython 3.13.18
+
+- 构建来源：Astral 的 python-build-standalone 官方项目 https://github.com/astral-sh/python-build-standalone/releases/tag/20261026 。此为 CPython 的第三方独立构建，并非 python.org 的 macOS 安装包。
+- 分别使用 aarch64-apple-darwin 和 x86_64-apple-darwin 的 install_only 构建。
+- 固定下载地址、原项目提供的 SHA-256 摘要均锁定在 resources.lock.json。
+- Mac 包保留上游完整运行环境、许可证与第三方声明；CPython 本身和其依赖分别遵循各自条款。
+- 项目启动脚本不会安装全局软件、修改系统 Python 或自动清除 macOS 隔离标记。

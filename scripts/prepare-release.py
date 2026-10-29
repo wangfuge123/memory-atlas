@@ -10,6 +10,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT / 'resources.lock.json').read_text())['resources']
+PUBLIC_FILES = ['index.html', 'start.bat', 'build-release.bat', 'start-server.ps1', 'gen-manifest.bat',
+                '.gitignore', '.gitattributes', 'gen-manifest.ps1', 'serve.py', 'local_library.py',
+                'resources.lock.json', 'README.md', 'THIRD_PARTY_NOTICES.md', 'LICENSE',
+                'Start-Memory-Atlas.command', 'start-macos.sh', 'start_local.py']
+PUBLIC_FOLDERS = ['css', 'js', 'data/maps', 'sample-photos', 'vendor', 'scripts', 'tests', 'docs', '.github']
+
+
+def write_public_file(archive, path):
+    name = 'memory-atlas/' + path.relative_to(ROOT).as_posix()
+    info = zipfile.ZipInfo.from_file(path, name)
+    info.create_system = 3
+    mode = 0o100755 if path.suffix in ('.sh', '.command') else 0o100644
+    info.external_attr = mode << 16
+    info.compress_type = zipfile.ZIP_DEFLATED
+    archive.writestr(info, path.read_bytes())
 
 
 def download(key):
@@ -77,19 +92,17 @@ def runtime():
 def build():
     dependencies()
     runtime()
-    files = ['index.html', 'start.bat', 'build-release.bat', 'start-server.ps1', 'gen-manifest.bat', '.gitignore', '.gitattributes',
-             'gen-manifest.ps1', 'serve.py', 'local_library.py', 'resources.lock.json',
-             'README.md', 'THIRD_PARTY_NOTICES.md', 'LICENSE']
-    folders = ['css', 'js', 'data/maps', 'sample-photos', 'vendor', 'scripts', 'runtime/python', 'tests', 'docs']
+    files = PUBLIC_FILES
+    folders = PUBLIC_FOLDERS + ['runtime/python']
     output = ROOT / 'dist/memory-atlas-windows-x64.zip'
     output.parent.mkdir(exist_ok=True)
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as archive:
         for path in [ROOT / x for x in files]:
-            archive.write(path, 'memory-atlas/' + path.relative_to(ROOT).as_posix())
+            write_public_file(archive, path)
         for folder in folders:
             for path in sorted((ROOT / folder).rglob('*')):
                 if path.is_file() and '__pycache__' not in path.parts and not path.name.endswith('.pyc') and '.original.' not in path.name:
-                    archive.write(path, 'memory-atlas/' + path.relative_to(ROOT).as_posix())
+                    write_public_file(archive, path)
         photos = ['sample-photos/' + p.name for p in sorted((ROOT / 'sample-photos').glob('*.png'))]
         archive.writestr('memory-atlas/images-manifest.js', 'export const IMAGE_FILES = ' + json.dumps(photos) + ';\n')
     digest = hashlib.sha256(output.read_bytes()).hexdigest()
