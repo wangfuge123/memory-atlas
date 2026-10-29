@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "resources": {
+    "python": {
+      "url": "https://www.python.org/ftp/python/3.13.12/python-3.13.12-embed-amd64.zip",
+      "sha256": "76f238f606250c87c6beac75dccd35ee99070a13490555936abb6cb64ecce3d0",
+      "archive": "python.zip",
+      "bytes": 10941233
+    },
+    "three": {
+      "url": "https://registry.npmjs.org/three/-/three-0.160.0.tgz",
+      "sha256": "1ee2f935c4f555814b388e87b5ef78a44856bd2e9d0feb88643a6e193fb42856",
+      "archive": "three.tgz",
+      "bytes": 9405899
+    },
+    "vision": {
+      "url": "https://registry.npmjs.org/@mediapipe/tasks-vision/-/tasks-vision-0.10.14.tgz",
+      "sha256": "3122ba7a70d414ffbb3a1bd194c370594a1bf1c90e467c375a5b8bd25be2c004",
+      "archive": "vision.tgz",
+      "bytes": 6077665
+    },
+    "hand_model": {
+      "url": "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "archive": "hand_model.task",
+      "bytes": 7819105
+    },
+    "vision_license": {
+      "url": "https://raw.githubusercontent.com/google-ai-edge/mediapipe/v0.10.14/LICENSE",
+      "sha256": "8707eef0533987efc5b155d64761eeb6e20793f50b9bd1a68dad1cf4719d0ed8",
+      "archive": "mediapipe-license.txt",
+      "bytes": 12331
+    }
+  }
+}

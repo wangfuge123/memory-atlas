@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+# Preserve downloaded dependency bytes for the recorded checksums.
+vendor/** -text
+sample-photos/** -text
+docs/screenshots/** -text
+*.zip -text

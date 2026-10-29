@@ -1,0 +1,161 @@
+:root {
+  --bg0: #050608;
+  --bg1: #0b0d12;
+  --ink: #e8edf6;
+  --muted: #8a93a6;
+  --accent: #5ad8ff;
+  --accent2: #6a7bff;
+  --glass: rgba(255, 255, 255, 0.04);
+  --stroke: rgba(255, 255, 255, 0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background:
+    radial-gradient(1200px 800px at 50% 42%, #12151c 0%, var(--bg1) 38%, var(--bg0) 100%);
+  color: var(--ink);
+  font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 细腻噪点 + 暗角，营造高级黑 */
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5;
+  background: radial-gradient(140% 120% at 50% 50%, transparent 55%, rgba(0,0,0,0.55) 100%);
+}
+
+#scene { position: fixed; inset: 0; display: block; z-index: 1; }
+
+/* ---------- 顶部品牌 ---------- */
+#brand {
+  position: fixed; top: 28px; left: 32px; z-index: 10;
+  display: flex; align-items: center; gap: 14px;
+}
+#brand .logo {
+  width: 40px; height: 40px; display: grid; place-items: center;
+  font-size: 20px; color: var(--accent);
+  border: 1px solid var(--stroke); border-radius: 12px;
+  background: var(--glass); backdrop-filter: blur(10px);
+  box-shadow: 0 0 24px rgba(90, 216, 255, 0.12);
+}
+#brand h1 {
+  font-size: 15px; font-weight: 600; letter-spacing: 0.42em;
+  background: linear-gradient(90deg, #fff, #9fb4ff);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+#brand p { font-size: 11px; color: var(--muted); letter-spacing: 0.25em; margin-top: 4px; }
+
+/* ---------- 状态 HUD ---------- */
+#hud {
+  position: fixed; top: 30px; left: 50%; transform: translateX(-50%); z-index: 10;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.hud-row {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 18px; border-radius: 999px;
+  background: var(--glass); border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px); font-size: 12.5px; letter-spacing: 0.18em;
+}
+.dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 10px var(--accent); animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+#gesture-name {
+  font-size: 12px; color: var(--accent); letter-spacing: 0.3em;
+  min-height: 16px; text-shadow: 0 0 12px rgba(90,216,255,0.5);
+}
+
+/* ---------- 手势说明 ---------- */
+#legend {
+  position: fixed; left: 32px; top: 50%; transform: translateY(-50%); z-index: 10;
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 20px 18px; border-radius: 16px;
+  background: var(--glass); border: 1px solid var(--stroke);
+  backdrop-filter: blur(14px);
+}
+.legend-head {
+  font-size: 11px; color: var(--accent); letter-spacing: 0.14em;
+  padding-bottom: 4px; margin-bottom: 2px; border-bottom: 1px solid var(--stroke);
+}
+.legend-item { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+.legend-item b {
+  display: inline-block; min-width: 96px; color: var(--ink);
+  font-weight: 600; margin-right: 8px;
+}
+
+/* ---------- 摄像头小窗 ---------- */
+#cam-box {
+  position: fixed; right: 24px; bottom: 24px; z-index: 10;
+  width: 220px; height: 165px; border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--stroke); background: #000;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02);
+}
+#cam { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+#overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cam-label {
+  position: absolute; top: 8px; left: 10px; font-size: 9px; letter-spacing: 0.3em;
+  color: rgba(255,255,255,0.55); text-shadow: 0 1px 3px #000;
+}
+#cam-box::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+}
+
+/* ---------- 选择准星 ---------- */
+#reticle {
+  left: 0; top: 0; will-change: transform; pointer-events: none;
+  position: fixed; z-index: 9; display: none;
+  width: 120px; height: 120px; margin: -60px 0 0 -60px;
+  border: 1.5px solid rgba(90,216,255,0.5); border-radius: 14px;
+  box-shadow: 0 0 24px rgba(90,216,255,0.25), inset 0 0 18px rgba(90,216,255,0.12);
+  transition: border-color .15s, box-shadow .15s;
+}
+#reticle[hidden] { display: none !important; }
+#reticle::before, #reticle::after {
+  content: ""; position: absolute; top: 50%; left: 50%; background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+#reticle::before { width: 18px; height: 1.5px; transform: translate(-50%, -50%); }
+#reticle::after { width: 1.5px; height: 18px; transform: translate(-50%, -50%); }
+#reticle.locked {
+  border-color: rgba(120,255,200,0.9);
+  box-shadow: 0 0 34px rgba(120,255,200,0.45), inset 0 0 22px rgba(120,255,200,0.2);
+}
+
+/* ---------- 启动遮罩 ---------- */
+#boot {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  background: radial-gradient(600px 400px at 50% 50%, #0c0f15, #050608);
+  color: var(--muted); font-size: 14px; letter-spacing: 0.2em; text-align: center;
+}
+#boot small { color: #5a6172; font-size: 11px; letter-spacing: 0.05em; }
+
+/* ---------- 放大查看提示 ---------- */
+#zoom-hint {
+  position: fixed; left: 50%; bottom: 48px; transform: translateX(-50%);
+  z-index: 12; display: none;
+  padding: 10px 22px; border-radius: 999px;
+  background: rgba(0,0,0,0.5); border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  font-size: 13px; letter-spacing: 0.2em; color: var(--ink);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+}
+
+/* ---------- 诊断条 ---------- */
+#debug {
+  position: fixed; right: 24px; bottom: 198px; z-index: 11;
+  width: 220px; padding: 7px 10px; border-radius: 8px;
+  background: rgba(0,0,0,0.55); border: 1px solid var(--stroke);
+  font-family: ui-monospace, Consolas, monospace; font-size: 10.5px; line-height: 1.6;
+  color: #9fe0c0; letter-spacing: 0.02em; white-space: pre;
+}
+#debug.warn { color: #ffd27a; }
+#debug.err { color: #ff9a9a; }
+
+@media (max-width: 720px) {
+  #legend { display: none; }
+  #cam-box { width: 150px; height: 112px; }
+}

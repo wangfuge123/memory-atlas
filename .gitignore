@@ -1,0 +1,24 @@
+/回忆库/
+/demo-photos/
+/test-results/
+/runtime/
+/dist/
+/.claude/
+/.vscode/
+/.idea/
+__pycache__/
+*.pyc
+*.log
+.env
+.env.*
+!.env.example
+Thumbs.db
+.DS_Store
+
+
+# Generated local photo list and development-only reference image
+/images-manifest.js
+/实现链路图.jpg
+/index.sphere-original.html
+/js/*.original.js
+/README.sphere-original.md
