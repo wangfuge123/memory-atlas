@@ -43,7 +43,9 @@ def get(path):
     with urllib.request.urlopen(url + path, timeout=10) as response:
         return response.read()
 assert json.loads(get('/api/albums')) == []
-assert Path(json.loads(get('/api/library'))['path']) == project / '回忆库'
+actual_library = Path(json.loads(get('/api/library'))['path']).resolve()
+expected_library = (project / '回忆库').resolve()
+assert actual_library == expected_library, (str(actual_library), str(expected_library))
 assert b'vendor/three' in get('/index.html')
 assert get('/sample-photos/landscape-01.png').startswith(b'\x89PNG')
 assert len(get('/vendor/models/hand_landmarker.task')) > 1000000
