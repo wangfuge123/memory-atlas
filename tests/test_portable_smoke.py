@@ -33,7 +33,11 @@ with (temporary / 'startup.out.log').open('wb') as stdout, (temporary / 'startup
                             stdout=stdout, stderr=stderr, timeout=100)
 output = (temporary / 'startup.out.log').read_bytes().decode(errors='replace')
 if result.returncode:
-    raise RuntimeError((temporary / 'startup.err.log').read_bytes().decode(errors='replace') + output)
+    error = (temporary / 'startup.err.log').read_bytes().decode(errors='replace')
+    match = re.search(r'See ([^\r\n]+?\.err\.log)', error)
+    if match and Path(match[1]).is_file():
+        error += '\nSERVER LOG:\n' + Path(match[1]).read_text(encoding='utf-8', errors='replace')[-6000:]
+    raise RuntimeError(error + output)
 url = re.search(r'Server ready: (http://127\.0\.0\.1:\d+)/index.html', output)[1]
 def get(path):
     with urllib.request.urlopen(url + path, timeout=10) as response:

@@ -127,7 +127,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     server = ThreadingHTTPServer(('127.0.0.1', args.port), partial(Handler, directory=str(ROOT)))
     server.library = Library(args.library)
-    print(f'Serving {ROOT} at http://127.0.0.1:{args.port}/index.html', flush=True)
+    print(f'Serving Memory Atlas at http://127.0.0.1:{args.port}/index.html', flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

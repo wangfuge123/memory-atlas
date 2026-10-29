@@ -1,5 +1,6 @@
 param([switch]$NoBrowser)
 $ErrorActionPreference = 'Stop'
+$env:PYTHONUTF8 = '1'
 $projectPath = [System.IO.Path]::GetFullPath($PSScriptRoot).TrimEnd('\')
 & (Join-Path $PSScriptRoot 'gen-manifest.ps1')
 # Keep this script ASCII so Windows PowerShell 5.1 reads it correctly without a BOM.
